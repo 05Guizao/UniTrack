@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.unitrack.viewmodel.UserStatsState
+import com.example.unitrack.ui.components.AppLogo
 
 @Composable
 fun UserHomeScreen(
@@ -40,11 +41,7 @@ fun UserHomeScreen(
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "UniTrack",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold
-        )
+        AppLogo(width = 140.dp)
 
         Spacer(modifier = Modifier.height(4.dp))
 

@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.unitrack.viewmodel.AuthState
+import com.example.unitrack.ui.components.AppLogo
 
 @Composable
 fun LoginScreen(
@@ -40,7 +41,7 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "UniTrack")
+        AppLogo(width = 170.dp)
 
         Spacer(modifier = Modifier.height(24.dp))
 

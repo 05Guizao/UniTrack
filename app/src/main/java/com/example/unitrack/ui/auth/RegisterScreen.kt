@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.unitrack.viewmodel.AuthState
+import com.example.unitrack.ui.components.AppLogo
 
 @Composable
 fun RegisterScreen(
@@ -51,6 +52,11 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
+        AppLogo(width = 130.dp)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text("Criar conta")
 
         Spacer(modifier = Modifier.height(24.dp))
