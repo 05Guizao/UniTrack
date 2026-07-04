@@ -53,6 +53,17 @@ data class AdminStatsState(
     val errorMessage: String? = null
 )
 
+data class UserStatsState(
+    val isLoading: Boolean = false,
+    val totalRequests: Int = 0,
+    val submittedRequests: Int = 0,
+    val inAnalysisRequests: Int = 0,
+    val completedRequests: Int = 0,
+    val rejectedRequests: Int = 0,
+    val cancelledRequests: Int = 0,
+    val errorMessage: String? = null
+)
+
 class RequestViewModel : ViewModel() {
 
     private val categoryRepository = CategoryRepository()
@@ -72,6 +83,8 @@ class RequestViewModel : ViewModel() {
     val adminRequestsState: StateFlow<AdminRequestsState> = _adminRequestsState.asStateFlow()
     private val _adminStatsState = MutableStateFlow(AdminStatsState())
     val adminStatsState: StateFlow<AdminStatsState> = _adminStatsState.asStateFlow()
+    private val _userStatsState = MutableStateFlow(UserStatsState())
+    val userStatsState: StateFlow<UserStatsState> = _userStatsState.asStateFlow()
 
 
     fun loadCategories() {
@@ -331,6 +344,31 @@ class RequestViewModel : ViewModel() {
                 )
             } catch (e: Exception) {
                 _adminStatsState.value = AdminStatsState(
+                    isLoading = false,
+                    errorMessage = "Erro ao carregar estatísticas."
+                )
+            }
+        }
+    }
+
+    fun loadUserStats(userId: String) {
+        viewModelScope.launch {
+            try {
+                _userStatsState.value = UserStatsState(isLoading = true)
+
+                val requests = requestRepository.getRequestsByUser(userId)
+
+                _userStatsState.value = UserStatsState(
+                    isLoading = false,
+                    totalRequests = requests.size,
+                    submittedRequests = requests.count { it.status == "SUBMITTED" },
+                    inAnalysisRequests = requests.count { it.status == "IN_ANALYSIS" },
+                    completedRequests = requests.count { it.status == "COMPLETED" },
+                    rejectedRequests = requests.count { it.status == "REJECTED" },
+                    cancelledRequests = requests.count { it.status == "CANCELLED" }
+                )
+            } catch (e: Exception) {
+                _userStatsState.value = UserStatsState(
                     isLoading = false,
                     errorMessage = "Erro ao carregar estatísticas."
                 )

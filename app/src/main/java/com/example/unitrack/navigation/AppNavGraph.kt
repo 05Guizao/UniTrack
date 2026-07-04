@@ -90,8 +90,19 @@ fun AppNavGraph() {
                 user = authState.user,
                 requiredProfileType = "USER",
                 navController = navController
-            ) {
+            ) { user ->
+                val requestViewModel: RequestViewModel = viewModel()
+                val userStatsState by requestViewModel.userStatsState.collectAsState()
+
+                LaunchedEffect(user.id) {
+                    requestViewModel.loadUserStats(user.id)
+                }
+
                 UserHomeScreen(
+                    userStatsState = userStatsState,
+                    onRefreshStats = {
+                        requestViewModel.loadUserStats(user.id)
+                    },
                     onCreateRequest = {
                         navController.navigate(Routes.CREATE_REQUEST)
                     },
@@ -402,3 +413,4 @@ private fun RequireRole(
         content(user)
     }
 }
+
