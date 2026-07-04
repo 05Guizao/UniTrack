@@ -36,6 +36,7 @@ import com.example.unitrack.data.model.ServiceRequest
 import com.example.unitrack.viewmodel.AdminRequestsState
 import com.example.unitrack.ui.components.StatusChip
 import com.example.unitrack.ui.components.RequestPhoto
+import com.example.unitrack.ui.components.requestMatchesSearch
 
 @Composable
 fun AdminRequestsScreen(
@@ -47,11 +48,22 @@ fun AdminRequestsScreen(
     onBack: () -> Unit
 ) {
     var selectedFilter by remember { mutableStateOf("ALL") }
+    var searchQuery by remember { mutableStateOf("") }
 
-    val filteredRequests = if (selectedFilter == "ALL") {
+    val filteredByStatus = if (selectedFilter == "ALL") {
         state.requests
     } else {
         state.requests.filter { it.status == selectedFilter }
+    }
+
+    val filteredRequests = filteredByStatus.filter { request ->
+        val categoryName = state.categoryNames[request.categoryId] ?: "Categoria desconhecida"
+
+        requestMatchesSearch(
+            request = request,
+            categoryName = categoryName,
+            query = searchQuery
+        )
     }
 
     Column(
@@ -66,6 +78,16 @@ fun AdminRequestsScreen(
         StatusFilterRow(
             selectedFilter = selectedFilter,
             onFilterSelected = { selectedFilter = it }
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            label = { Text("Pesquisar pedidos") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -92,7 +114,7 @@ fun AdminRequestsScreen(
             }
 
             filteredRequests.isEmpty() -> {
-                Text("Não existem pedidos para este estado.")
+                Text("Não existem pedidos para o filtro ou pesquisa selecionados.")
 
                 Spacer(modifier = Modifier.height(12.dp))
 

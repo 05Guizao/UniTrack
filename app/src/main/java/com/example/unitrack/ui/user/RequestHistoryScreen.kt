@@ -14,15 +14,21 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.unitrack.data.model.ServiceRequest
-import com.example.unitrack.viewmodel.HistoryRequestsState
-import com.example.unitrack.ui.components.StatusChip
 import com.example.unitrack.ui.components.RequestPhoto
+import com.example.unitrack.ui.components.StatusChip
+import com.example.unitrack.ui.components.requestMatchesSearch
+import com.example.unitrack.viewmodel.HistoryRequestsState
 
 @Composable
 fun RequestHistoryScreen(
@@ -30,6 +36,18 @@ fun RequestHistoryScreen(
     onRefresh: () -> Unit,
     onBack: () -> Unit
 ) {
+    var searchQuery by remember { mutableStateOf("") }
+
+    val filteredRequests = state.requests.filter { request ->
+        val categoryName = state.categoryNames[request.categoryId] ?: "Categoria desconhecida"
+
+        requestMatchesSearch(
+            request = request,
+            categoryName = categoryName,
+            query = searchQuery
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -38,6 +56,16 @@ fun RequestHistoryScreen(
         Text("Histórico de Pedidos")
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            label = { Text("Pesquisar no histórico") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         when {
             state.isLoading -> {
@@ -70,12 +98,22 @@ fun RequestHistoryScreen(
                 }
             }
 
+            filteredRequests.isEmpty() -> {
+                Text("Nenhum pedido encontrado para a pesquisa.")
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedButton(onClick = onBack) {
+                    Text("Voltar")
+                }
+            }
+
             else -> {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.weight(1f)
                 ) {
-                    items(state.requests) { request ->
+                    items(filteredRequests) { request ->
                         HistoryRequestCard(
                             request = request,
                             categoryName = state.categoryNames[request.categoryId]

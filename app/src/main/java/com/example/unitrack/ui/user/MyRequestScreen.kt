@@ -29,6 +29,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.example.unitrack.ui.components.RequestPhoto
+import androidx.compose.material3.OutlinedTextField
+import com.example.unitrack.ui.components.requestMatchesSearch
 
 @Composable
 fun MyRequestsScreen(
@@ -37,6 +39,18 @@ fun MyRequestsScreen(
     onCancelRequest: (Long) -> Unit,
     onBack: () -> Unit
 ) {
+    var searchQuery by remember { mutableStateOf("") }
+
+    val filteredRequests = state.requests.filter { request ->
+        val categoryName = state.categoryNames[request.categoryId] ?: "Categoria desconhecida"
+
+        requestMatchesSearch(
+            request = request,
+            categoryName = categoryName,
+            query = searchQuery
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -45,6 +59,16 @@ fun MyRequestsScreen(
         Text("Meus Pedidos")
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            label = { Text("Pesquisar pedidos") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         when {
             state.isLoading -> {
@@ -77,12 +101,22 @@ fun MyRequestsScreen(
                 }
             }
 
+            filteredRequests.isEmpty() -> {
+                Text("Nenhum pedido encontrado para a pesquisa.")
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedButton(onClick = onBack) {
+                    Text("Voltar")
+                }
+            }
+
             else -> {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.weight(1f)
                 ) {
-                    items(state.requests) { request ->
+                    items(filteredRequests) { request ->
                         RequestItemCard(
                             request = request,
                             categoryName = state.categoryNames[request.categoryId] ?: "Categoria desconhecida",
