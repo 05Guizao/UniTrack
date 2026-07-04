@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.unitrack.navigation.AppNavGraph
 import com.example.unitrack.ui.theme.UniTrackTheme
+import com.example.unitrack.ui.components.NotificationPermissionHandler
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -12,6 +13,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             UniTrackTheme {
+                NotificationPermissionHandler()
                 AppNavGraph()
             }
         }

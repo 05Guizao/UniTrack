@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.unitrack.data.model.Category
 import com.example.unitrack.viewmodel.CreateRequestState
+import com.example.unitrack.notification.NotificationHelper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,6 +66,12 @@ fun CreateRequestScreen(
 
     LaunchedEffect(state.successMessage) {
         if (state.successMessage == "Pedido criado com sucesso.") {
+            NotificationHelper.showNotification(
+                context = context,
+                title = "Pedido submetido",
+                message = "O teu pedido foi criado com sucesso."
+            )
+
             selectedCategory = null
             location = ""
             description = ""

@@ -37,6 +37,8 @@ import com.example.unitrack.viewmodel.AdminRequestsState
 import com.example.unitrack.ui.components.StatusChip
 import com.example.unitrack.ui.components.RequestPhoto
 import com.example.unitrack.ui.components.requestMatchesSearch
+import androidx.compose.ui.platform.LocalContext
+import com.example.unitrack.notification.NotificationHelper
 
 @Composable
 fun AdminRequestsScreen(
@@ -249,8 +251,8 @@ private fun AdminRequestCard(
     onUpdateStatus: (String) -> Unit,
     onDeleteRequest: () -> Unit
 ) {
+    val context = LocalContext.current
     val createdDate = formatDateOnly(request.createdAt)
-
     var expanded by remember { mutableStateOf(false) }
     var selectedStatus by remember { mutableStateOf(request.status) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -319,6 +321,12 @@ private fun AdminRequestCard(
                                 selectedStatus = status.dbValue
                                 expanded = false
                                 onUpdateStatus(status.dbValue)
+
+                                NotificationHelper.showNotification(
+                                    context = context,
+                                    title = "Estado atualizado",
+                                    message = "O pedido #${request.id} foi atualizado para ${status.label}."
+                                )
                             }
                         )
                     }
@@ -354,6 +362,12 @@ private fun AdminRequestCard(
                     onClick = {
                         showDeleteDialog = false
                         onDeleteRequest()
+
+                        NotificationHelper.showNotification(
+                            context = context,
+                            title = "Pedido eliminado",
+                            message = "O pedido #${request.id} foi eliminado."
+                        )
                     }
                 ) {
                     Text("Eliminar")

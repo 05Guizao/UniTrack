@@ -31,6 +31,8 @@ import androidx.compose.runtime.setValue
 import com.example.unitrack.ui.components.RequestPhoto
 import androidx.compose.material3.OutlinedTextField
 import com.example.unitrack.ui.components.requestMatchesSearch
+import androidx.compose.ui.platform.LocalContext
+import com.example.unitrack.notification.NotificationHelper
 
 @Composable
 fun MyRequestsScreen(
@@ -155,6 +157,7 @@ private fun RequestItemCard(
     categoryName: String,
     onCancelRequest: (Long) -> Unit
 ) {
+    val context = LocalContext.current
     val createdDate = formatDateOnly(request.createdAt)
     val canCancel = request.status == "SUBMITTED" || request.status == "IN_ANALYSIS"
     var showCancelDialog by remember { mutableStateOf(false) }
@@ -224,6 +227,12 @@ private fun RequestItemCard(
                     onClick = {
                         showCancelDialog = false
                         onCancelRequest(request.id)
+
+                        NotificationHelper.showNotification(
+                            context = context,
+                            title = "Pedido cancelado",
+                            message = "O pedido #${request.id} foi cancelado."
+                        )
                     }
                 ) {
                     Text("Cancelar pedido")
