@@ -176,16 +176,21 @@ class RequestViewModel : ViewModel() {
             try {
                 _userRequestsState.value = UserRequestsState(isLoading = true)
 
-                val requests = requestRepository.getRequestsByUser(userId)
+                val allRequests = requestRepository.getRequestsByUser(userId)
                 val categories = categoryRepository.getAllCategories()
 
                 val categoryNames = categories.associate { category ->
                     category.id to category.name
                 }
 
+                val activeRequests = allRequests.filter { request ->
+                    request.status == "SUBMITTED" ||
+                            request.status == "IN_ANALYSIS"
+                }
+
                 _userRequestsState.value = UserRequestsState(
                     isLoading = false,
-                    requests = requests,
+                    requests = activeRequests,
                     categoryNames = categoryNames
                 )
             } catch (e: Exception) {

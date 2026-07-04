@@ -12,7 +12,8 @@ import kotlinx.coroutines.launch
 data class AuthState(
     val isLoading: Boolean = false,
     val user: UserProfile? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val registrationSuccess: Boolean = false
 )
 
 class AuthViewModel : ViewModel() {
@@ -54,34 +55,27 @@ class AuthViewModel : ViewModel() {
         password: String,
         profileType: String
     ) {
-        if (name.isBlank() || email.isBlank() || password.isBlank()) {
-            _authState.value = _authState.value.copy(
-                errorMessage = "Preenche todos os campos."
-            )
-            return
-        }
-
-        if (password.length < 6) {
-            _authState.value = _authState.value.copy(
-                errorMessage = "A password deve ter pelo menos 6 caracteres."
-            )
-            return
-        }
-
         viewModelScope.launch {
             try {
                 _authState.value = AuthState(isLoading = true)
 
-                val user = repository.register(
-                    name = name.trim(),
-                    email = email.trim(),
+                repository.register(
+                    name = name,
+                    email = email,
                     password = password,
                     profileType = profileType
                 )
 
-                _authState.value = AuthState(user = user)
+                repository.logout()
+
+                _authState.value = AuthState(
+                    isLoading = false,
+                    user = null,
+                    registrationSuccess = true
+                )
             } catch (e: Exception) {
                 _authState.value = AuthState(
+                    isLoading = false,
                     errorMessage = getFriendlyErrorMessage(e)
                 )
             }
@@ -96,7 +90,16 @@ class AuthViewModel : ViewModel() {
     }
 
     fun clearError() {
-        _authState.value = _authState.value.copy(errorMessage = null)
+        _authState.value = _authState.value.copy(
+            errorMessage = null,
+            registrationSuccess = false
+        )
+    }
+
+    fun clearRegistrationSuccess() {
+        _authState.value = _authState.value.copy(
+            registrationSuccess = false
+        )
     }
 
     private fun getFriendlyErrorMessage(e: Exception): String {

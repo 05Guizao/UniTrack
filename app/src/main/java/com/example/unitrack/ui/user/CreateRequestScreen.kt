@@ -53,6 +53,7 @@ fun CreateRequestScreen(
 
     var selectedPhotoUri by remember { mutableStateOf<Uri?>(null) }
     var photoError by remember { mutableStateOf<String?>(null) }
+    val maxPhotoSizeBytes = 5 * 1024 * 1024
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -210,6 +211,8 @@ fun CreateRequestScreen(
         } else {
             Button(
                 onClick = {
+                    photoError = null
+
                     val photoBytes = try {
                         selectedPhotoUri?.let { uri ->
                             context.contentResolver
@@ -220,6 +223,11 @@ fun CreateRequestScreen(
                         }
                     } catch (e: Exception) {
                         photoError = "Erro ao carregar a imagem selecionada."
+                        return@Button
+                    }
+
+                    if (photoBytes != null && photoBytes.size > maxPhotoSizeBytes) {
+                        photoError = "A imagem selecionada é demasiado grande. O limite é 5 MB."
                         return@Button
                     }
 

@@ -71,6 +71,11 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        if (authState.registrationSuccess) {
+            Text("Conta criada com sucesso. Inicia sessão.")
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
         if (authState.errorMessage != null) {
             Text(text = authState.errorMessage)
             Spacer(modifier = Modifier.height(12.dp))

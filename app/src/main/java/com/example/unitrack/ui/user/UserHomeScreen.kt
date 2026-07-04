@@ -13,11 +13,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.unitrack.viewmodel.UserStatsState
 
@@ -38,47 +40,79 @@ fun UserHomeScreen(
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("UniTrack")
+        Text(
+            text = "UniTrack",
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold
+        )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
-        Text("Painel do Utilizador")
+        Text(
+            text = "Gestão de serviços do campus",
+            style = MaterialTheme.typography.bodyMedium
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        when {
-            userStatsState.isLoading -> {
-                CircularProgressIndicator()
-            }
-
-            userStatsState.errorMessage != null -> {
-                Text(userStatsState.errorMessage)
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Button(
-                    onClick = onRefreshStats,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Tentar novamente")
-                }
-            }
-
-            else -> {
-                UserStatsSection(userStatsState)
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Resumo dos meus pedidos",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                OutlinedButton(
-                    onClick = onRefreshStats,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Atualizar estatísticas")
+                when {
+                    userStatsState.isLoading -> {
+                        CircularProgressIndicator()
+                    }
+
+                    userStatsState.errorMessage != null -> {
+                        Text(userStatsState.errorMessage)
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Button(
+                            onClick = onRefreshStats,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Tentar novamente")
+                        }
+                    }
+
+                    else -> {
+                        UserStatsSection(userStatsState)
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        OutlinedButton(
+                            onClick = onRefreshStats,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Atualizar estatísticas")
+                        }
+                    }
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "Ações",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         Button(
             onClick = onCreateRequest,
@@ -134,7 +168,7 @@ private fun UserStatsSection(
         modifier = Modifier.fillMaxWidth()
     ) {
         UserStatCard(
-            title = "Total dos meus pedidos",
+            title = "Total",
             value = state.totalRequests.toString(),
             modifier = Modifier.fillMaxWidth()
         )
@@ -193,11 +227,18 @@ private fun UserStatCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(title)
+            Text(
+                text = value,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-            Text(value)
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
     }
 }

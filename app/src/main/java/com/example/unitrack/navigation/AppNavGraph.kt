@@ -70,13 +70,27 @@ fun AppNavGraph() {
         }
 
         composable(Routes.REGISTER) {
+            LaunchedEffect(authState.registrationSuccess) {
+                if (authState.registrationSuccess) {
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(Routes.REGISTER) {
+                            inclusive = true
+                        }
+                    }
+                }
+            }
+
             RegisterScreen(
                 authState = authState,
                 onRegisterClick = { name, email, password, profileType ->
-                    authViewModel.register(name, email, password, profileType)
+                    authViewModel.register(
+                        name = name,
+                        email = email,
+                        password = password,
+                        profileType = profileType
+                    )
                 },
                 onBackToLogin = {
-                    authViewModel.clearError()
                     navController.popBackStack()
                 },
                 onClearError = {

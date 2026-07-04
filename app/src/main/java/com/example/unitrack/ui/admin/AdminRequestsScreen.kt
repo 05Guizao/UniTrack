@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -31,12 +30,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.example.unitrack.data.model.RequestStatus
 import com.example.unitrack.data.model.ServiceRequest
 import com.example.unitrack.viewmodel.AdminRequestsState
+import com.example.unitrack.ui.components.StatusChip
+import com.example.unitrack.ui.components.RequestPhoto
 
 @Composable
 fun AdminRequestsScreen(
@@ -228,7 +227,6 @@ private fun AdminRequestCard(
     onUpdateStatus: (String) -> Unit,
     onDeleteRequest: () -> Unit
 ) {
-    val statusLabel = RequestStatus.getLabelFromDbValue(request.status)
     val createdDate = formatDateOnly(request.createdAt)
 
     var expanded by remember { mutableStateOf(false) }
@@ -245,10 +243,7 @@ private fun AdminRequestCard(
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            AssistChip(
-                onClick = {},
-                label = { Text(statusLabel) }
-            )
+            StatusChip(status = request.status)
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -262,8 +257,13 @@ private fun AdminRequestCard(
 
             Text("Descrição: ${request.description}")
 
+            if (!request.photoUrl.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(12.dp))
+                RequestPhoto(photoUrl = request.photoUrl)
+            }
+
             if (createdDate != null) {
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text("Criado em: $createdDate")
             }
 
@@ -346,19 +346,6 @@ private fun AdminRequestCard(
                     Text("Cancelar")
                 }
             }
-        )
-    }
-
-    if (!request.photoUrl.isNullOrBlank()) {
-        Spacer(modifier = Modifier.height(8.dp))
-
-        AsyncImage(
-            model = request.photoUrl,
-            contentDescription = "Foto do pedido",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp),
-            contentScale = ContentScale.Crop
         )
     }
 }

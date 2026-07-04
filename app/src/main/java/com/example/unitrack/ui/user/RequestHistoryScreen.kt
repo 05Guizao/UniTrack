@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -19,12 +18,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import com.example.unitrack.data.model.RequestStatus
 import com.example.unitrack.data.model.ServiceRequest
 import com.example.unitrack.viewmodel.HistoryRequestsState
+import com.example.unitrack.ui.components.StatusChip
+import com.example.unitrack.ui.components.RequestPhoto
 
 @Composable
 fun RequestHistoryScreen(
@@ -115,7 +113,6 @@ private fun HistoryRequestCard(
     request: ServiceRequest,
     categoryName: String
 ) {
-    val statusLabel = RequestStatus.getLabelFromDbValue(request.status)
     val createdDate = formatDateOnly(request.createdAt)
 
     Card(
@@ -128,10 +125,7 @@ private fun HistoryRequestCard(
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            AssistChip(
-                onClick = {},
-                label = { Text(statusLabel) }
-            )
+            StatusChip(status = request.status)
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -145,24 +139,16 @@ private fun HistoryRequestCard(
 
             Text("Descrição: ${request.description}")
 
+            if (!request.photoUrl.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(12.dp))
+                RequestPhoto(photoUrl = request.photoUrl)
+            }
+
             if (createdDate != null) {
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text("Criado em: $createdDate")
             }
         }
-    }
-
-    if (!request.photoUrl.isNullOrBlank()) {
-        Spacer(modifier = Modifier.height(8.dp))
-
-        AsyncImage(
-            model = request.photoUrl,
-            contentDescription = "Foto do pedido",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp),
-            contentScale = ContentScale.Crop
-        )
     }
 }
 

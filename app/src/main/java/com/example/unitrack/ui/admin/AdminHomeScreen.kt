@@ -13,11 +13,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.unitrack.viewmodel.AdminStatsState
 
@@ -37,43 +39,79 @@ fun AdminHomeScreen(
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Painel do Administrador")
+        Text(
+            text = "UniTrack",
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = "Painel do Administrador",
+            style = MaterialTheme.typography.bodyMedium
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        when {
-            adminStatsState.isLoading -> {
-                CircularProgressIndicator()
-            }
-
-            adminStatsState.errorMessage != null -> {
-                Text(adminStatsState.errorMessage)
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Button(
-                    onClick = onRefreshStats,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Tentar novamente")
-                }
-            }
-
-            else -> {
-                AdminStatsSection(adminStatsState)
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Resumo geral dos pedidos",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                OutlinedButton(
-                    onClick = onRefreshStats,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Atualizar estatísticas")
+                when {
+                    adminStatsState.isLoading -> {
+                        CircularProgressIndicator()
+                    }
+
+                    adminStatsState.errorMessage != null -> {
+                        Text(adminStatsState.errorMessage)
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Button(
+                            onClick = onRefreshStats,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Tentar novamente")
+                        }
+                    }
+
+                    else -> {
+                        AdminStatsSection(adminStatsState)
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        OutlinedButton(
+                            onClick = onRefreshStats,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Atualizar estatísticas")
+                        }
+                    }
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "Administração",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         Button(
             onClick = onRequests,
@@ -120,7 +158,7 @@ private fun AdminStatsSection(
         modifier = Modifier.fillMaxWidth()
     ) {
         AdminStatCard(
-            title = "Total de pedidos",
+            title = "Total",
             value = state.totalRequests.toString(),
             modifier = Modifier.fillMaxWidth()
         )
@@ -179,11 +217,18 @@ private fun AdminStatCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(title)
+            Text(
+                text = value,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-            Text(value)
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
     }
 }
